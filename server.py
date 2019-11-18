@@ -66,13 +66,13 @@ class Server(object):
 
 					#================================== ACCEPT PLAYER IF NOT FULL ==================================#
 					new_player = Player(conn, addr, message[2:])
-					if(len(players) < 13):
+					if(len(self.players) < 13):
 						new_thread = PlayerSocketThread(self.sckt, new_player)
 						new_thread.start()
 						self.addPlayer(new_player)
 						self.threads.append(new_thread)
 						self.sckt.sendAccept(new_player)
-					
+
 					#================================== REJECT PLAYER IF FULL ==================================#
 					else:
 						self.sckt.sendReject(newPlayer)
@@ -88,7 +88,7 @@ class Server(object):
 			if total_players > 2 and vote_count == total_players:
 				for x in self.getPlayers():
 					try:
-						sckt.sendStartGame(x)
+						self.sckt.sendStartGame(x)
 					except Exception as e:
 						print(e)
 				break

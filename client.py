@@ -51,9 +51,9 @@ class Client(object):
 					break
 				else:
 					print('Bitch, I gave you two choices.')
-					
+
 		#================================== IF NOT ACCEPTED ==================================#
 		else:
 			print('Server is full.')
 		print('Closing Game...')
-		sckt.close()
+		self.sckt.close()
