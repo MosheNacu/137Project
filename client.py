@@ -4,44 +4,55 @@ clear = lambda: os.system('cls')
 
 class Client(object):
 	def __init__(self):
-		self.sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.msgBuilder = MsgGen()
-		self.currentPlayers = ""
+		self.ip = '127.0.0.1'
+		self.port = 5005
+		self.buffer_size = 1024		
+		self.current_cards = []
 	def start(self):
-		# self.serverIP = str(input("Specify Host IP Address: "))
-		# self.serverPort = int(input("Specify Port: "))
-		self.serverIP = '127.0.0.1'
-		self.serverPort = 5005
-		self.buffer_size = 1024
-		self.sckt.connect((self.serverIP, self.serverPort))
+		#================================== ENTER DETAILS ==================================#
+		# self.ip = str(input("Specify Host IP Address: "))
+		# self.port = int(input("Specify Port: "))
+		self.player_name = input('Enter your player name: ')
 
-		self.name = input('Enter your player name: ')
-		joinMessage = self.msgBuilder.build(self.name, MsgGen.CLIENT_JOIN_GAME)
-		self.sckt.send(joinMessage)
-		joinReply = self.sckt.recv(Client.BUFFER_SIZE)
-		self.currentPlayers = self.msgBuilder.getString(joinReply)
-		print("Waiting for Players: {0}".format(self.currentPlayers))
-		if self.msgBuilder.getType(joinReply) == MsgGen.SERVER_ACCEPT_PLAYER:
+		#================================== CONNECT TO SERVER ==================================#
+		self.sckt = ClientNetworkHandler(self.ip, self.port, self.player_name)
+		self.sckt.joinServer()
+		data = self.sckt.recv(self.buffer_size)
+		message = str(data.decode('utf8'))
+
+		#================================== IF ACCEPTED ==================================#
+		if message[:2] == NetworkCommand.SERVER_ACCEPT_PLAYER:
 			while True:
-				clear()
-				x = input('[1] Vote Start\n[2] Leave Room\n> ')
-				if len(x) > 2 && x[:2] == ">>1":
-					pass
-				else if len(x) > 2 && x[:2] == ">>2":
-					pass
-				else if len(x) > 0:
-					
+				x = input('[1] Vote Start\n[2] Leave Lobby')
+
+				#================================== ON VOTE ==================================#
+				if x == '1':
+					print('Waiting for other players to start...')
+					data = self.sckt.recv(self.buffer_size)
+					message = str(data.decode('utf8'))
+
+					#================================== ENTER DETAILS ==================================#
+					if message[:2] == NetworkCommand.SERVER_START_GAME:		#START GAME
+						while True:
+							data = self.sckt.recv(self.buffer_size)
+							message = str(data.decode('utf8'))
+							if message[:2] == NetworkCommand.SERVER_SEND_CARDS:
+								card_string = message[2:]
+								self.current_cards = [card_string[i:i+2] for i in range(0, len(card_string), 2)]
+								pass #TODO
+							else:
+								pass
+					break
+				#================================== ON LEAVE ==================================#
+				elif x == '2':
+					print('Leaving Lobby...')
+					self.sckt.leaveLobby()
+					break
+				else:
+					print('Bitch, I gave you two choices.')
+
+		#================================== IF NOT ACCEPTED ==================================#
 		else:
 			print('Server is full.')
+		print('Closing Game...')
 		sckt.close()
-
-
-msg = str(data.decode('utf8'))
-if (msg == "AC"):
-	while True:
-		print("Waiting for other players")
-		print("[1] Vote Start")
-		print("[2] Leave Room")
-		x = input()
-s.close()
-print ("received data:", data)
