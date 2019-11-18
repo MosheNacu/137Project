@@ -4,6 +4,7 @@ clear = lambda: os.system('cls')
 
 class Client(object):
 	def __init__(self):
+		#================================== INITIALIZE CLIENT ==================================#
 		self.ip = '127.0.0.1'
 		self.port = 5005
 		self.buffer_size = 1024		
@@ -31,8 +32,8 @@ class Client(object):
 					data = self.sckt.recv(self.buffer_size)
 					message = str(data.decode('utf8'))
 
-					#================================== ENTER DETAILS ==================================#
-					if message[:2] == NetworkCommand.SERVER_START_GAME:		#START GAME
+					#================================== GAME LOOP ==================================#
+					if message[:2] == NetworkCommand.SERVER_START_GAME:
 						while True:
 							data = self.sckt.recv(self.buffer_size)
 							message = str(data.decode('utf8'))
@@ -50,7 +51,7 @@ class Client(object):
 					break
 				else:
 					print('Bitch, I gave you two choices.')
-
+					
 		#================================== IF NOT ACCEPTED ==================================#
 		else:
 			print('Server is full.')

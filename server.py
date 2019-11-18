@@ -4,10 +4,13 @@ r = threading.RLock()
 
 class PlayerSocketThread (threading.Thread):
 	def __init__(self, sckt, player):
+		#================================== INITIALIZE SOCKET THREAD ==================================#
 		threading.Thread.__init__(self)
 		self.player = player
 		self.sckt = sckt
+
 	def run(self):
+		#================================== THREAD FOR EACH PLAYER CONNECTION ==================================#
 		while True:
 			data = self.player.conn.recv(BUFFER_SIZE)
 			message = str(data.decode('utf8'))
@@ -23,10 +26,13 @@ class PlayerSocketThread (threading.Thread):
 
 class Server(object):
 	def __init__(self):
+		#================================== INITIALIZE SERVER ==================================#
 		self.ip = '127.0.0.1'
 		self.port = 5005
 		self.buffer_size = 1024
-
+		self.players = []
+		self.threads = []
+	#================================== THREAD LOCKS FOR PLAYER LIST ==================================#
 	def addPlayer(self, player):
 		r.acquire()
 		self.players.append(player)
@@ -42,42 +48,54 @@ class Server(object):
 		return list(self.players)
 		r.release()
 
+
 	def start(start):
-		self.players = []
-		self.threads = []
+		#================================== START SERVER ==================================#
 		self.sckt = ServerNetworkHandler(self.ip, self.port, self.buffer_size)
+
+		#================================== LOBBY LOOP ==================================#
 		while True:
-			while True:
-				self.sckt.setTimeOut(1.0)
-				try:
-					conn, addr = self.sckt.socketAccept()
-					data = conn.recv(BUFFER_SIZE)
-					message = str(data.decode('utf8'))
-					if message[:2] == NetworkCommand.CLIENT_JOIN_GAME:
-						if(len(players) < 13):
-							new_player = Player(conn, addr, message[2:])
-							new_thread = PlayerSocketThread(self.sckt, new_player)
-							new_thread.start()
-							self.addPlayer(new_player)
-							self.threads.append(new_thread)
-							self.sckt.sendAccept(new_player)
-						else:
-							self.sckt.sendReject(newPlayer)
+
+			self.sckt.setTimeOut(1.0)
+			#================================== RECEIVE PLAYER JOIN ==================================#
+			try:
+				conn, addr = self.sckt.socketAccept()
+				data = conn.recv(BUFFER_SIZE)
+				message = str(data.decode('utf8'))
+				if message[:2] == NetworkCommand.CLIENT_JOIN_GAME:
+
+					#================================== ACCEPT PLAYER IF NOT FULL ==================================#
+					new_player = Player(conn, addr, message[2:])
+					if(len(players) < 13):
+						new_thread = PlayerSocketThread(self.sckt, new_player)
+						new_thread.start()
+						self.addPlayer(new_player)
+						self.threads.append(new_thread)
+						self.sckt.sendAccept(new_player)
+					
+					#================================== REJECT PLAYER IF FULL ==================================#
 					else:
-						conn.close()
-				except socket.timeout as e:
-					pass
-				all_players = self.getPlayers()
-				total_players = len(all_players)
-				vote_count = len([x for x in all_players if x.vote])
-				if total_players > 2 and vote_count == total_players:
-					for x in self.getPlayers():
-						try:
-							sckt.sendStartGame(x)
-						except Exception as e:
-							print(e)
-					break
-			while True:
+						self.sckt.sendReject(newPlayer)
+				else:
+					conn.close()
+			except socket.timeout as e:
 				pass
-			for t in self.threads:
-				t.join()
+
+			#================================== VOTE TALLYING ==================================#
+			all_players = self.getPlayers()
+			total_players = len(all_players)
+			vote_count = len([x for x in all_players if x.vote])
+			if total_players > 2 and vote_count == total_players:
+				for x in self.getPlayers():
+					try:
+						sckt.sendStartGame(x)
+					except Exception as e:
+						print(e)
+				break
+
+		#================================== GAME LOOP ==================================#
+		while True:
+			pass
+		#================================== JOIN THREADS ==================================#
+		for t in self.threads:
+			t.join()

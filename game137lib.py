@@ -1,5 +1,6 @@
 import socket
 
+#================================== PLAYER OBJECT ==================================#
 class Player:
 	def __init__(self, conn, addr, player_name):
 		self.conn = conn
@@ -9,6 +10,7 @@ class Player:
 	def sendMessage(self, message):
 		self.conn.send(message)
 
+#================================== GENERAL COMMUNICATION COMMANDS ==================================#
 class NetworkCommand(object):
 	CLIENT_JOIN_GAME = '01'
 	SERVER_ACCEPT_PLAYER = '02'
@@ -22,6 +24,7 @@ class NetworkCommand(object):
 	CLIENT_PUT_DOWN = '10'
 	SERVER_RANKINGS = '11'
 
+#================================== CLIENT SOCKET HANDLER ==================================#
 class ClientNetworkHandler(object):
 	def __init__(self, ip, port, player_name):
 		self.player_name = player_name
@@ -56,6 +59,8 @@ class ClientNetworkHandler(object):
 	def putDown(self, card):
 		sendCommand(NetworkCommand.CLIENT_PUT_DOWN)
 
+
+#================================== SERVER SOCKET HANDLER ==================================#
 class ServerNetworkHandler(object):	
 	def __init__(self, ip, port, buffer_size):
 		self.ip = ip
@@ -81,6 +86,7 @@ class ServerNetworkHandler(object):
 
 	def sendReject(self, player)
 		self.sendCommand(player, NetworkCommand.SERVER_REJECT_PLAYER)
+		player.conn.close()
 
 	def sendStartGame(self, player):
 		self.sendCommand(player, NetworkCommand.SERVER_START_GAME)
