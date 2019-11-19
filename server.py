@@ -101,7 +101,8 @@ class Server(object):
 		#================================== GAME LOOP ==================================#
 		selected_cards = []
 		selected_rand_int = []
-		for x in range(len(self.players)):
+		i = 0
+		while i < len(self.players):
 			rand = random.randint(0, 12)
 			if rand in selected_rand_int:
 				pass
@@ -109,13 +110,25 @@ class Server(object):
 				selected_rand_int.append(rand)
 				card_set = self.baseDeck[rand]
 				selected_cards.extend(card_set)
+				i += 1
 		random.shuffle(selected_cards)
 		print(selected_cards)
+
+		# for x in range(len(self.players)):
+		# 	rand = random.randint(0, 12)
+		# 	if rand in selected_rand_int:
+		# 		pass
+		# 	else:
+		# 		selected_rand_int.append(rand)
+		# 		card_set = self.baseDeck[rand]
+		# 		selected_cards.extend(card_set)
+		# random.shuffle(selected_cards)
+		# print(selected_cards)
 
 		for player in self.players:
 			card = ''
 			for _ in range(4):
-				card = card + selected_cards.pop() + ' '
+				card += selected_cards.pop() + ' '
 			self.sckt.sendCards(player, card)
 			
 
