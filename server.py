@@ -12,22 +12,22 @@ class PlayerSocketThread (threading.Thread):
 		self.buffer_size = 1024
 	def run(self):
 		#================================== THREAD FOR EACH PLAYER CONNECTION ==================================#
-		while True:
-			data = self.player.conn.recv(self.buffer_size)
-			message = str(data.decode('utf8'))
-			if message[:2] == NetworkCommand.CLIENT_VOTE_START:
-				print('Client Vote Start')
-				self.player.vote = True
+		# while True:
+		data = self.player.conn.recv(self.buffer_size)
+		message = str(data.decode('utf8'))
+		if message[:2] == NetworkCommand.CLIENT_VOTE_START:
+			print('Client Vote Start')
+			self.player.vote = True
 
-			elif message[:2] == NetworkCommand.CLIENT_LEAVE:
-				self.sckt.removePlayer(self.player)
-				print("{0} Left The Lobby...".format(self.player.player_name))
+		elif message[:2] == NetworkCommand.CLIENT_LEAVE:
+			self.sckt.removePlayer(self.player)
+			print("{0} Left The Lobby...".format(self.player.player_name))
 
-			elif message[:2] == NetworkCommand.CLIENT_CHOOSE_CARD:
-				print('Client Choose Card')
+		elif message[:2] == NetworkCommand.CLIENT_CHOOSE_CARD:
+			print('Client Choose Card')
 
-			elif message[:2] == NetworkCommand.CLIENT_PUT_DOWN:
-				print('Client Put Down')
+		elif message[:2] == NetworkCommand.CLIENT_PUT_DOWN:
+			print('Client Put Down')
 
 class Server(object):
 	def __init__(self):
@@ -119,11 +119,11 @@ class Server(object):
 			self.sckt.sendCards(player, card)
 			
 
-		while True:
-			continue
+		# while True:
+		# 	continue
 		#================================== JOIN THREADS ==================================#
-		for t in self.threads:
-			t.join()
+		# for t in self.threads:
+		# 	t.join()
 		print('End')
 s = Server()
 s.start()
