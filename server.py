@@ -1,14 +1,12 @@
 import game137lib
 
 r = threading.RLock()
-
 class PlayerSocketThread (threading.Thread):
 	def __init__(self, sckt, player):
 		#================================== INITIALIZE SOCKET THREAD ==================================#
 		threading.Thread.__init__(self)
 		self.player = player
 		self.sckt = sckt
-
 	def run(self):
 		#================================== THREAD FOR EACH PLAYER CONNECTION ==================================#
 		while True:
@@ -16,11 +14,14 @@ class PlayerSocketThread (threading.Thread):
 			message = str(data.decode('utf8'))
 			if message[:2] == NetworkCommand.CLIENT_VOTE_START:
 				print('Client Vote Start')
+
 			elif message[:2] == NetworkCommand.CLIENT_LEAVE:
 				self.sckt.removePlayer(self.player)
 				print("{0} Left The Lobby...".format(self.player.player_name))
+
 			elif message[:2] == NetworkCommand.CLIENT_CHOOSE_CARD:
 				print('Client Choose Card')
+
 			elif message[:2] == NetworkCommand.CLIENT_PUT_DOWN:
 				print('Client Put Down')
 
@@ -32,6 +33,7 @@ class Server(object):
 		self.buffer_size = 1024
 		self.players = []
 		self.threads = []
+		self.baseDeck = [[i+x for x in ['D', 'H', 'S', 'C']] for i in range(1,14)]
 	#================================== THREAD LOCKS FOR PLAYER LIST ==================================#
 	def addPlayer(self, player):
 		r.acquire()
@@ -94,6 +96,7 @@ class Server(object):
 				break
 
 		#================================== GAME LOOP ==================================#
+
 		while True:
 			pass
 		#================================== JOIN THREADS ==================================#
