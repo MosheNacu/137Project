@@ -1,4 +1,6 @@
 import socket
+import threading
+import random
 
 #================================== PLAYER OBJECT ==================================#
 class Player:
@@ -7,6 +9,7 @@ class Player:
 		self.addr = addr
 		self.player_name = player_name
 		self.vote = False
+		self.cards = []
 	def sendMessage(self, message):
 		self.conn.send(message)
 
@@ -46,10 +49,10 @@ class ClientNetworkHandler(object):
 		self.sckt.send(message)
 
 	def voteStart(self):
-		sendCommand(NetworkCommand.CLIENT_VOTE_START)
+		self.sendCommand(NetworkCommand.CLIENT_VOTE_START)
 
 	def leaveLobby(self):
-		sendCommand(NetworkCommand.CLIENT_LEAVE)
+		self.sendCommand(NetworkCommand.CLIENT_LEAVE)
 
 	def chooseCard(self, chosen_card):
 		choose_message = "{0}{1}".format(NetworkCommand.CLIENT_CHOOSE_CARD, chosen_card)
@@ -57,7 +60,7 @@ class ClientNetworkHandler(object):
 		self.sckt.send(message)
 
 	def putDown(self, card):
-		sendCommand(NetworkCommand.CLIENT_PUT_DOWN)
+		self.sendCommand(NetworkCommand.CLIENT_PUT_DOWN)
 
 
 #================================== SERVER SOCKET HANDLER ==================================#
@@ -84,7 +87,7 @@ class ServerNetworkHandler(object):
 	def sendAccept(self, player):
 		self.sendCommand(player, NetworkCommand.SERVER_ACCEPT_PLAYER)
 
-	def sendReject(self, player)
+	def sendReject(self, player):
 		self.sendCommand(player, NetworkCommand.SERVER_REJECT_PLAYER)
 		player.conn.close()
 
@@ -92,8 +95,12 @@ class ServerNetworkHandler(object):
 		self.sendCommand(player, NetworkCommand.SERVER_START_GAME)
 
 	def sendCards(self, player, cards):
-		message = "{0}{1}".format(NetworkCommand.SERVER_SEND_CARDS, cards).encode('utf8')
-		player.conn.send(message)
+		message = "{0}{1}".format(NetworkCommand.SERVER_SEND_CARDS, cards)
+		print(message)
+		byte_message = message.encode('utf8')
+		player.conn.send(byte_message)
+
+
 
 	def sendWinnerDeclaration(self, player, winner):
 		message = "{0}{1}".format(NetworkCommand.SERVER_WINNER_DECLARED, winner).encode('utf8')
