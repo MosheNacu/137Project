@@ -2,16 +2,42 @@ import socket
 import threading
 import random
 
+rankLock = threading.RLock()
 #================================== PLAYER OBJECT ==================================#
 class Player:
+	STATE_VOTING = 0 
+	STATE_VOTED = 1
+	STATE_CHOOSING_CARD = 2
+	STATE_CHOSEN_CARD = 3
+	STATE_FINISHED = 4
+	WINNER_RANK = 0
 	def __init__(self, conn, addr, player_name):
 		self.conn = conn
 		self.addr = addr
 		self.player_name = player_name
-		self.vote = False
+		self.state = Player.STATE_VOTING
+		self.ranking = 0
 		self.cards = []
+		self.chosenCard = None
 	def sendMessage(self, message):
 		self.conn.send(message)
+	def setStateToVoted(self):
+		self.state = Player.STATE_VOTED
+	def setStateToChoosingCard(self):
+		self.state = Player.STATE_CHOOSING_CARD
+	def setStateToChosenCard(self):
+		self.state = Player.STATE_CHOSEN_CARD
+	def setStateToFinished(self):
+		self.state = Player.STATE_FINISHED
+	def setChosenCard(self, card):
+		self.chosenCard = card
+	def placeInRanking(self):
+		rankLock.acquire()
+		Player.WINNER_RANK+=1
+		self.ranking = Player.WINNER_RANK
+		rankLock.release()
+
+
 
 #================================== GENERAL COMMUNICATION COMMANDS ==================================#
 class NetworkCommand(object):
@@ -59,7 +85,7 @@ class ClientNetworkHandler(object):
 		message = choose_message.encode('utf8')
 		self.sckt.send(message)
 
-	def putDown(self, card):
+	def putDown(self):
 		self.sendCommand(NetworkCommand.CLIENT_PUT_DOWN)
 
 
@@ -96,12 +122,8 @@ class ServerNetworkHandler(object):
 
 	def sendCards(self, player, cards):
 		message = "{0}{1}".format(NetworkCommand.SERVER_SEND_CARDS, cards)
-		print(message)
 		byte_message = message.encode('utf8')
 		player.conn.send(byte_message)
 
-
-
-	def sendWinnerDeclaration(self, player, winner):
-		message = "{0}{1}".format(NetworkCommand.SERVER_WINNER_DECLARED, winner).encode('utf8')
-		player.conn.send(message)
+	def sendWinCondition(self, player):
+		self.sendCommand(player, NetworkCommand.SERVER_WINNER_DECLARED)
