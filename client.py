@@ -6,13 +6,13 @@ clear = lambda: os.system('cls')
 class Client(object):
 	def __init__(self):
 		#================================== INITIALIZE CLIENT ==================================#
-		self.ip = '127.0.0.34'
-		self.port = 5005
+		# self.ip = '127.0.0.34'
+		# self.port = 5005
 		self.buffer_size = 1024
 	def start(self):
 		#================================== ENTER DETAILS ==================================#
-		# self.ip = str(input("Specify Host IP Address: "))
-		# self.port = int(input("Specify Port: "))
+		self.ip = str(input("Specify Host IP Address: "))
+		self.port = int(input("Specify Port: "))
 		self.player_name = input('Enter your player name: ')
 
 		#================================== CONNECT TO SERVER ==================================#
@@ -24,7 +24,7 @@ class Client(object):
 		#================================== IF ACCEPTED ==================================#
 		if message[:2] == NetworkCommand.SERVER_ACCEPT_PLAYER:
 			while True:
-				x = input('[1] Vote Start\n[2] Leave Lobby\n>>>')
+				x = input('[1] Vote Start\n[2] Leave Lobby\n[3] Instructions\n>>>')
 
 				#================================== ON VOTE ==================================#
 				if x == '1':
@@ -45,6 +45,8 @@ class Client(object):
 								#================================== WIN CHECK ==================================#
 								winConditionValue = current_cards[0][:-1]
 								if len([w for w in current_cards if w[:-1] == winConditionValue]) == len(current_cards):
+									for i in range(len(current_cards)):
+										print("[{0}] {1}".format(i+1, current_cards[i]))
 									print('Your cards are complete! Hurry and put down your cards!\n[1] Put Down Cards')
 									while True:
 										try:
@@ -96,6 +98,18 @@ class Client(object):
 					print('Leaving Lobby...')
 					self.sckt.leaveLobby()
 					break
+				#================================== ON INSTRUCTIONS ==================================#
+				elif x == '3':
+					print('=============== How to play ===============\n')
+					print('All players must first vote to start')
+					print('You will be dealt four cards labeled from 1-4')
+					print('The goal is to complete four cards of the same number or face')
+					print('Select which card you will want to discard from your hand by typing a number from 1-4')
+					print('You will recieve a discarded card from the player on your left')
+					print('Once a player completes their hand, they enter 1 to place your hand down.')
+					print('The remaining players race to put their hand down')
+					print('The last player to put down their hand loses\n')
+					print('===========================================')
 				else:
 					print('Please choose one of the two choices.')
 
