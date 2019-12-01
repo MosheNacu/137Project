@@ -15,6 +15,8 @@ except ImportError:
 import client_gui_support
 
 import os
+from tkinter import * 
+from tkinter.ttk import *
 from game137lib import *
 
 choice = 0
@@ -88,18 +90,34 @@ class Game_Panel:
         self.card_1 = tk.Button(top)
         self.card_1.place(relx=0.112, rely=0.378, height=191, width=121)
         self.card_1.configure(activebackground="#f9f9f9")
-
-        self.card_3 = tk.Button(top)
-        self.card_3.place(relx=0.548, rely=0.378, height=191, width=121)
-        self.card_3.configure(activebackground="#f9f9f9")
+        file_1 = str(Client.cards[0])
+        self._img1 = tk.PhotoImage(file="./deck/"+file_1+".png")
+        self.card_1.configure(image=self._img1)
+        self.card_1.configure(pady="0")
 
         self.card_2 = tk.Button(top)
-        self.card_2.place(relx=0.324, rely=0.378, height=191, width=121)
+        self.card_2.place(relx=0.548, rely=0.378, height=191, width=121)
         self.card_2.configure(activebackground="#f9f9f9")
+        file_2 = str(Client.cards[1])
+        self._img2 = tk.PhotoImage(file="./deck/"+file_2+".png")
+        self.card_2.configure(image=self._img2)
+        self.card_2.configure(pady="0")
+
+        self.card_3 = tk.Button(top)
+        self.card_3.place(relx=0.324, rely=0.378, height=191, width=121)
+        self.card_3.configure(activebackground="#f9f9f9")
+        file_3 = str(Client.cards[2])
+        self._img3 = tk.PhotoImage(file="./deck/"+file_3+".png")
+        self.card_3.configure(image=self._img3)
+        self.card_3.configure(pady="0")
 
         self.card_4 = tk.Button(top)
         self.card_4.place(relx=0.76, rely=0.378, height=191, width=121)
         self.card_4.configure(activebackground="#f9f9f9")
+        file_4 = str(Client.cards[3])
+        self._img4 = tk.PhotoImage(file="./deck/"+file_4+".png")
+        self.card_4.configure(image=self._img4)
+        self.card_4.configure(pady="0")
 
         self.player_name = tk.Label(top)
         self.player_name.place(relx=0.112, rely=0.069, height=71, width=409)
@@ -313,6 +331,7 @@ class Client(object):
         self.ip = str(ip)
         self.port = int(port)
         self.player_name = name
+        Client.player_name = self.player_name
 
         #================================== CONNECT TO SERVER ==================================#
         self.sckt = ClientNetworkHandler(self.ip, self.port, self.player_name)
@@ -334,13 +353,14 @@ class Client(object):
                     #================================== GAME LOOP ==================================#
                     if message[:2] == NetworkCommand.SERVER_START_GAME:
                         print('Game has commenced...')
-                        vp_start_game_gui()
                         while True:
                             data = self.sckt.sckt.recv(self.buffer_size)
                             message = str(data.decode('utf8'))
                             if message[:2] == NetworkCommand.SERVER_SEND_CARDS:
                                 card_string = message[2:]
                                 current_cards = card_string.split(' ')
+                                Client.cards = current_cards
+                                vp_start_game_gui()
                                 #================================== WIN CHECK ==================================#
                                 winConditionValue = current_cards[0][:-1]
                                 if len([w for w in current_cards if w[:-1] == winConditionValue]) == len(current_cards):
