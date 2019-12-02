@@ -15,6 +15,7 @@ except ImportError:
 import client_gui_support
 
 import os
+from tkinter import messagebox
 from tkinter import * 
 from tkinter.ttk import *
 from game137lib import *
@@ -148,7 +149,8 @@ class Game_Panel:
         self.player_name.configure(text=string)
         
         if winner_declared == 1:
-            messagebox.showerror("Someone has already won! Hurry and put down your cards!")
+            messagebox.showwarning("Someone has already won! Hurry and put down your cards!")
+            self.put_down_button.configure(state="normal")
 
         self.quit_button = tk.Button(top)
         self.quit_button.place(relx=0.834, rely=0.086, height=31, width=60)
@@ -188,7 +190,7 @@ class Game_Panel:
     def chooseCard4(self):
         global root
         global card_index
-        card_index = 4
+        card_index = 3
         root.quit()
 
 class Menu_Panel:
@@ -366,7 +368,7 @@ class Lobby:
 		global root
 		choice = 2
 		root.destroy()
-        vp_start_gui()
+		vp_start_gui()
 	def show_instructions(self):
 		self.Text1.configure(state="normal")
 		text = '===== How to play =====\nAll players must first vote to start\nYou will be dealt four cards labeled from 1-4\nThe goal is to complete four cards of the same number or face\nSelect which card you will want to discard from your hand by typing a number from 1-4\nYou will recieve a discarded card from the player on your left\nOnce a player completes their hand, they enter 1 to place your hand down.\nThe remaining players race to put their hand down\nThe last player to put down their hand loses\n'
@@ -439,7 +441,6 @@ class Client(object):
                             if put_down == 1 :
                                 self.sckt.putDown()
                                 break
-                        break
                     else:
                         break
                 #================================== ON LEAVE ==================================#
