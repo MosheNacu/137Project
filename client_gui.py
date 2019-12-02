@@ -15,7 +15,6 @@ except ImportError:
 import client_gui_support
 
 import os
-from tkinter import messagebox
 from tkinter import * 
 from tkinter.ttk import *
 from game137lib import *
@@ -85,78 +84,110 @@ class Game_Panel:
         top.configure(highlightcolor="black")
 
         global winner_declared
+        global put_down
 
-        self.pass_button = tk.Button(top)
-        self.pass_button.place(relx=0.223, rely=0.842, height=31, width=131)
-        self.pass_button.configure(activeforeground="white")
-        self.pass_button.configure(activeforeground="#916626")
-        self.pass_button.configure(background="#6b4b1c")
-        self.pass_button.configure(text='''PASS''')
 
-        self.put_down_button = tk.Button(top)
-        self.put_down_button.place(relx=0.623, rely=0.842, height=31, width=131)
-        self.put_down_button.configure(activeforeground="white")
-        self.put_down_button.configure(activeforeground="#916626")
-        self.put_down_button.configure(background="#6b4b1c")
-        self.put_down_button.configure(text='''PUT DOWN''')
-        self.put_down_button.configure(state="disabled", command=self.putDown)
+        if put_down == 1:
+            self.Label1 = tk.Label(top)
+            self.Label1.place(relx=0.211, rely=0.067, height=81, width=489)
+            self.Label1.configure(activebackground="#f9f9f9")
+            self.Label1.configure(background="#0d4f0a")
+            self.Label1.configure(font="-family {Karumbi} -size 72")
+            self.Label1.configure(foreground="#ffffff")
+            self.Label1.configure(text='''YOU WON!''')
 
-        winConditionValue = Client.cards[0][:-1]
-        if (len([w for w in Client.cards if w[:-1] == winConditionValue]) == len(Client.cards) or winner_declared == 1):
-            self.put_down_button.configure(state="normal")
+            self.quit_button = tk.Button(top)
+            self.quit_button.place(relx=0.469, rely=0.286, height=31, width=60)
+            self.quit_button.configure(activebackground="#f9f9f9")
+            self.quit_button.configure(background="#aa0000")
+            self.quit_button.configure(text='''QUIT''', command=self.quit_game)
 
-        self.card_1 = tk.Button(top)
-        self.card_1.place(relx=0.112, rely=0.378, height=191, width=121)
-        self.card_1.configure(activebackground="#00f4f4")
-        file_1 = str(Client.cards[0])
-        self._img1 = tk.PhotoImage(file="./deck/"+file_1+".png")
-        self.card_1.configure(image=self._img1)
-        self.card_1.configure(pady="0", command=self.chooseCard1)
+        else:
+            if winner_declared == 1:
+                self.Label1 = tk.Label(top)
+                self.Label1.place(relx=0.211, rely=0.067, height=81, width=489)
+                self.Label1.configure(activebackground="#f9f9f9")
+                self.Label1.configure(background="#0d4f0a")
+                self.Label1.configure(font="-family {Karumbi} -size 16")
+                self.Label1.configure(foreground="#ffffff")
+                self.Label1.configure(text="Someone has already won! Hurry and put down your cards!")
 
-        self.card_2 = tk.Button(top)
-        self.card_2.place(relx=0.548, rely=0.378, height=191, width=121)
-        self.card_2.configure(activebackground="#00f4f4")
-        file_2 = str(Client.cards[1])
-        self._img2 = tk.PhotoImage(file="./deck/"+file_2+".png")
-        self.card_2.configure(image=self._img2)
-        self.card_2.configure(pady="0", command=self.chooseCard2)
+                self.put_down_button = tk.Button(top)
+                self.put_down_button.place(relx=0.469, rely=0.286, height=31, width=131)
+                self.put_down_button.configure(activeforeground="white")
+                self.put_down_button.configure(activeforeground="#916626")
+                self.put_down_button.configure(background="#6b4b1c")
+                self.put_down_button.configure(text='''PUT DOWN''')
+                self.put_down_button.configure(command=self.putDown)
 
-        self.card_3 = tk.Button(top)
-        self.card_3.place(relx=0.324, rely=0.378, height=191, width=121)
-        self.card_3.configure(activebackground="#00f4f4")
-        file_3 = str(Client.cards[2])
-        self._img3 = tk.PhotoImage(file="./deck/"+file_3+".png")
-        self.card_3.configure(image=self._img3)
-        self.card_3.configure(pady="0", command=self.chooseCard3)
+            else:
+                self.pass_button = tk.Button(top)
+                self.pass_button.place(relx=0.223, rely=0.842, height=31, width=131)
+                self.pass_button.configure(activeforeground="white")
+                self.pass_button.configure(activeforeground="#916626")
+                self.pass_button.configure(background="#6b4b1c")
+                self.pass_button.configure(text='''PASS''')
 
-        self.card_4 = tk.Button(top)
-        self.card_4.place(relx=0.76, rely=0.378, height=191, width=121)
-        self.card_4.configure(activebackground="#00f4f4")
-        file_4 = str(Client.cards[3])
-        self._img4 = tk.PhotoImage(file="./deck/"+file_4+".png")
-        self.card_4.configure(image=self._img4)
-        self.card_4.configure(pady="0", command=self.chooseCard4)
+                self.put_down_button = tk.Button(top)
+                self.put_down_button.place(relx=0.623, rely=0.842, height=31, width=131)
+                self.put_down_button.configure(activeforeground="white")
+                self.put_down_button.configure(activeforeground="#916626")
+                self.put_down_button.configure(background="#6b4b1c")
+                self.put_down_button.configure(text='''PUT DOWN''')
+                self.put_down_button.configure(state="disabled", command=self.putDown)
 
-        self.player_name = tk.Label(top)
-        self.player_name.place(relx=0.112, rely=0.069, height=71, width=409)
-        self.player_name.configure(activebackground="#f9f9f9")
-        self.player_name.configure(anchor='w')
-        self.player_name.configure(background="#0d4f0a")
-        self.player_name.configure(font="-family {Kalimati} -size 15")
-        self.player_name.configure(justify='left')
-        self.player_name.configure(foreground="#ffffff")
-        string = "PLAYER: " + Client.player_name
-        self.player_name.configure(text=string)
-        
-        if winner_declared == 1:
-            messagebox.showwarning("Someone has already won! Hurry and put down your cards!")
-            self.put_down_button.configure(state="normal")
+                winConditionValue = Client.cards[0][:-1]
+                if (len([w for w in Client.cards if w[:-1] == winConditionValue]) == len(Client.cards) or winner_declared == 1):
+                    self.put_down_button.configure(state="normal")
 
-        self.quit_button = tk.Button(top)
-        self.quit_button.place(relx=0.834, rely=0.086, height=31, width=60)
-        self.quit_button.configure(activebackground="#f9f9f9")
-        self.quit_button.configure(background="#aa0000")
-        self.quit_button.configure(text='''QUIT''', command=self.quit_game)
+                self.card_1 = tk.Button(top)
+                self.card_1.place(relx=0.112, rely=0.378, height=191, width=121)
+                self.card_1.configure(activebackground="#00f4f4")
+                file_1 = str(Client.cards[0])
+                self._img1 = tk.PhotoImage(file="./deck/"+file_1+".png")
+                self.card_1.configure(image=self._img1)
+                self.card_1.configure(pady="0", command=self.chooseCard1)
+
+                self.card_2 = tk.Button(top)
+                self.card_2.place(relx=0.548, rely=0.378, height=191, width=121)
+                self.card_2.configure(activebackground="#00f4f4")
+                file_2 = str(Client.cards[1])
+                self._img2 = tk.PhotoImage(file="./deck/"+file_2+".png")
+                self.card_2.configure(image=self._img2)
+                self.card_2.configure(pady="0", command=self.chooseCard2)
+
+                self.card_3 = tk.Button(top)
+                self.card_3.place(relx=0.324, rely=0.378, height=191, width=121)
+                self.card_3.configure(activebackground="#00f4f4")
+                file_3 = str(Client.cards[2])
+                self._img3 = tk.PhotoImage(file="./deck/"+file_3+".png")
+                self.card_3.configure(image=self._img3)
+                self.card_3.configure(pady="0", command=self.chooseCard3)
+
+                self.card_4 = tk.Button(top)
+                self.card_4.place(relx=0.76, rely=0.378, height=191, width=121)
+                self.card_4.configure(activebackground="#00f4f4")
+                file_4 = str(Client.cards[3])
+                self._img4 = tk.PhotoImage(file="./deck/"+file_4+".png")
+                self.card_4.configure(image=self._img4)
+                self.card_4.configure(pady="0", command=self.chooseCard4)
+
+                self.player_name = tk.Label(top)
+                self.player_name.place(relx=0.112, rely=0.069, height=71, width=409)
+                self.player_name.configure(activebackground="#f9f9f9")
+                self.player_name.configure(anchor='w')
+                self.player_name.configure(background="#0d4f0a")
+                self.player_name.configure(font="-family {Kalimati} -size 15")
+                self.player_name.configure(justify='left')
+                self.player_name.configure(foreground="#ffffff")
+                string = "PLAYER: " + Client.player_name
+                self.player_name.configure(text=string)
+
+                self.quit_button = tk.Button(top)
+                self.quit_button.place(relx=0.834, rely=0.086, height=31, width=60)
+                self.quit_button.configure(activebackground="#f9f9f9")
+                self.quit_button.configure(background="#aa0000")
+                self.quit_button.configure(text='''QUIT''', command=self.quit_game)
 
     def quit_game(self):
         global root
@@ -402,8 +433,8 @@ class Client(object):
 
         #================================== IF ACCEPTED ==================================#
         if message[:2] == NetworkCommand.SERVER_ACCEPT_PLAYER:
+            vp_start_lobby_gui()
             while True:
-                vp_start_lobby_gui()
                 #================================== ON VOTE ==================================#
                 if choice == 1:
                     print('Waiting for other players to start...')
@@ -429,9 +460,8 @@ class Client(object):
 
                                 if put_down == 1 :
                                     self.sckt.putDown()
-                                    break
-
-                                self.sckt.chooseCard(current_cards[card_index])
+                                else:
+                                    self.sckt.chooseCard(current_cards[card_index])
                     #================================== SOMEONE ELSE WON ==================================#
                     elif message[:2] == NetworkCommand.SERVER_WINNER_DECLARED:
                         global winner_declared
@@ -440,7 +470,6 @@ class Client(object):
                         while True:
                             if put_down == 1 :
                                 self.sckt.putDown()
-                                break
                     else:
                         break
                 #================================== ON LEAVE ==================================#
