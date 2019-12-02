@@ -20,6 +20,9 @@ from tkinter.ttk import *
 from game137lib import *
 
 choice = 0
+card_index = 0
+put_down = 0
+winner_declared = 0
 
 def vp_start_gui():
     '''Starting point when module is the main routine.'''
@@ -80,44 +83,58 @@ class Game_Panel:
         top.configure(background="#0d4f0a")
         top.configure(highlightcolor="black")
 
+        global winner_declared
+
         self.pass_button = tk.Button(top)
-        self.pass_button.place(relx=0.423, rely=0.842, height=31, width=131)
+        self.pass_button.place(relx=0.223, rely=0.842, height=31, width=131)
         self.pass_button.configure(activeforeground="white")
         self.pass_button.configure(activeforeground="#916626")
         self.pass_button.configure(background="#6b4b1c")
         self.pass_button.configure(text='''PASS''')
 
+        self.put_down_button = tk.Button(top)
+        self.put_down_button.place(relx=0.623, rely=0.842, height=31, width=131)
+        self.put_down_button.configure(activeforeground="white")
+        self.put_down_button.configure(activeforeground="#916626")
+        self.put_down_button.configure(background="#6b4b1c")
+        self.put_down_button.configure(text='''PUT DOWN''')
+        self.put_down_button.configure(state="disabled", command=self.putDown)
+
+        winConditionValue = Client.cards[0][:-1]
+        if (len([w for w in Client.cards if w[:-1] == winConditionValue]) == len(Client.cards) or winner_declared == 1):
+            self.put_down_button.configure(state="normal")
+
         self.card_1 = tk.Button(top)
         self.card_1.place(relx=0.112, rely=0.378, height=191, width=121)
-        self.card_1.configure(activebackground="#f9f9f9")
+        self.card_1.configure(activebackground="#00f4f4")
         file_1 = str(Client.cards[0])
         self._img1 = tk.PhotoImage(file="./deck/"+file_1+".png")
         self.card_1.configure(image=self._img1)
-        self.card_1.configure(pady="0")
+        self.card_1.configure(pady="0", command=self.chooseCard1)
 
         self.card_2 = tk.Button(top)
         self.card_2.place(relx=0.548, rely=0.378, height=191, width=121)
-        self.card_2.configure(activebackground="#f9f9f9")
+        self.card_2.configure(activebackground="#00f4f4")
         file_2 = str(Client.cards[1])
         self._img2 = tk.PhotoImage(file="./deck/"+file_2+".png")
         self.card_2.configure(image=self._img2)
-        self.card_2.configure(pady="0")
+        self.card_2.configure(pady="0", command=self.chooseCard2)
 
         self.card_3 = tk.Button(top)
         self.card_3.place(relx=0.324, rely=0.378, height=191, width=121)
-        self.card_3.configure(activebackground="#f9f9f9")
+        self.card_3.configure(activebackground="#00f4f4")
         file_3 = str(Client.cards[2])
         self._img3 = tk.PhotoImage(file="./deck/"+file_3+".png")
         self.card_3.configure(image=self._img3)
-        self.card_3.configure(pady="0")
+        self.card_3.configure(pady="0", command=self.chooseCard3)
 
         self.card_4 = tk.Button(top)
         self.card_4.place(relx=0.76, rely=0.378, height=191, width=121)
-        self.card_4.configure(activebackground="#f9f9f9")
+        self.card_4.configure(activebackground="#00f4f4")
         file_4 = str(Client.cards[3])
         self._img4 = tk.PhotoImage(file="./deck/"+file_4+".png")
         self.card_4.configure(image=self._img4)
-        self.card_4.configure(pady="0")
+        self.card_4.configure(pady="0", command=self.chooseCard4)
 
         self.player_name = tk.Label(top)
         self.player_name.place(relx=0.112, rely=0.069, height=71, width=409)
@@ -126,14 +143,53 @@ class Game_Panel:
         self.player_name.configure(background="#0d4f0a")
         self.player_name.configure(font="-family {Kalimati} -size 15")
         self.player_name.configure(justify='left')
+        self.player_name.configure(foreground="#ffffff")
         string = "PLAYER: " + Client.player_name
         self.player_name.configure(text=string)
+        
+        if winner_declared == 1:
+            messagebox.showerror("Someone has already won! Hurry and put down your cards!")
 
         self.quit_button = tk.Button(top)
         self.quit_button.place(relx=0.834, rely=0.086, height=31, width=60)
         self.quit_button.configure(activebackground="#f9f9f9")
         self.quit_button.configure(background="#aa0000")
-        self.quit_button.configure(text='''QUIT''', command=root.destroy)
+        self.quit_button.configure(text='''QUIT''', command=self.quit_game)
+
+    def quit_game(self):
+        global root
+        root.destroy()
+        vp_start_gui()
+
+    def putDown(self):
+        global root
+        global put_down
+        put_down = 1
+        root.quit()
+
+    def chooseCard1(self):
+        global root
+        global card_index
+        card_index = 0
+        root.quit()
+
+    def chooseCard2(self):
+        global root
+        global card_index
+        card_index = 1
+        root.quit()
+
+    def chooseCard3(self):
+        global root
+        global card_index
+        card_index = 2
+        root.quit()
+
+    def chooseCard4(self):
+        global root
+        global card_index
+        card_index = 4
+        root.quit()
 
 class Menu_Panel:
     def __init__(self, top=None):
@@ -242,7 +298,7 @@ class Lobby:
 		_ana2color = '#d9d9d9' # X11 color: 'gray85' 
 
 		top.geometry("600x450+411+139")
-		top.title("New Toplevel")
+		top.title("Lobby")
 		top.configure(background="#000000")
 
 		self.Text1 = tk.Text(top)
@@ -309,7 +365,8 @@ class Lobby:
 		global choice
 		global root
 		choice = 2
-		root.quit()
+		root.destroy()
+        vp_start_gui()
 	def show_instructions(self):
 		self.Text1.configure(state="normal")
 		text = '===== How to play =====\nAll players must first vote to start\nYou will be dealt four cards labeled from 1-4\nThe goal is to complete four cards of the same number or face\nSelect which card you will want to discard from your hand by typing a number from 1-4\nYou will recieve a discarded card from the player on your left\nOnce a player completes their hand, they enter 1 to place your hand down.\nThe remaining players race to put their hand down\nThe last player to put down their hand loses\n'
@@ -335,6 +392,8 @@ class Client(object):
 
         #================================== CONNECT TO SERVER ==================================#
         self.sckt = ClientNetworkHandler(self.ip, self.port, self.player_name)
+        Client.sckt = self.sckt
+        Client.buffer_size = self.buffer_size 
         self.sckt.joinServer()
         data = self.sckt.sckt.recv(self.buffer_size)
         message = str(data.decode('utf8'))
@@ -349,69 +408,40 @@ class Client(object):
                     self.sckt.voteStart()
                     data = self.sckt.sckt.recv(self.buffer_size)
                     message = str(data.decode('utf8'))
-
+                    Client.message = message
                     #================================== GAME LOOP ==================================#
                     if message[:2] == NetworkCommand.SERVER_START_GAME:
                         print('Game has commenced...')
+
                         while True:
+                            global put_down
+                            global card_index
                             data = self.sckt.sckt.recv(self.buffer_size)
                             message = str(data.decode('utf8'))
                             if message[:2] == NetworkCommand.SERVER_SEND_CARDS:
                                 card_string = message[2:]
                                 current_cards = card_string.split(' ')
                                 Client.cards = current_cards
+
                                 vp_start_game_gui()
-                                #================================== WIN CHECK ==================================#
-                                winConditionValue = current_cards[0][:-1]
-                                if len([w for w in current_cards if w[:-1] == winConditionValue]) == len(current_cards):
-                                    for i in range(len(current_cards)):
-                                        print("[{0}] {1}".format(i+1, current_cards[i]))
-                                    print('Your cards are complete! Hurry and put down your cards!\n[1] Put Down Cards')
-                                    while True:
-                                        try:
-                                            x = int(input('>>>'))
-                                            if(x == 1):
-                                                self.sckt.putDown()
-                                                break
-                                            print('That is not a choice.')
-                                            continue
-                                        except:
-                                            print('That is not a choice.')
-                                            continue
+
+                                if put_down == 1 :
+                                    self.sckt.putDown()
                                     break
-                                #================================== CHOOSE CARD ==================================#
-                                while True:
-                                    print('Choose the card to pass to your right!')
-                                    for i in range(len(current_cards)):
-                                        print("[{0}] {1}".format(i+1, current_cards[i]))
-                                    try:
-                                        x = int(input('>>>'))
-                                        if(x > 0 and x < 5):
-                                            break
-                                        print('Please type your card again.')
-                                        continue
-                                    except:
-                                        print('Please type your card again.')
-                                        continue
-                                self.sckt.chooseCard(current_cards[x-1])
-                            #================================== SOMEONE ELSE WON ==================================#
-                            elif message[:2] == NetworkCommand.SERVER_WINNER_DECLARED:
-                                print('Someone has already won! Hurry and put down your cards!\n[1] Put Down Cards')
-                                while True:
-                                    try:
-                                        x = int(input('>>>'))
-                                        if(x == 1):
-                                            self.sckt.putDown()
-                                            break
-                                        print('That is not a choice.')
-                                        continue
-                                    except:
-                                        print('That is not a choice.')
-                                        continue
+
+                                self.sckt.chooseCard(current_cards[card_index])
+                    #================================== SOMEONE ELSE WON ==================================#
+                    elif message[:2] == NetworkCommand.SERVER_WINNER_DECLARED:
+                        global winner_declared
+                        winner_declared = 1
+                        vp_start_game_gui()
+                        while True:
+                            if put_down == 1 :
+                                self.sckt.putDown()
                                 break
-                            else:
-                                break
-                    break
+                        break
+                    else:
+                        break
                 #================================== ON LEAVE ==================================#
                 elif choice == 2:
                     print('Leaving Lobby...')
