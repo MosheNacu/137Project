@@ -35,6 +35,15 @@ class PlayerSocketThread (threading.Thread):
 
 			elif message[:2] == NetworkCommand.CLIENT_PUT_DOWN:
 				self.player.placeInRanking()
+				if (self.player.ranking == 1):
+					for p in self.server.getPlayers():
+						self.server.sckt.sendWinCondition(p)
+					self.server.sckt.sendWinRanking(self.player)
+				elif (self.player.ranking == len(self.server.getPlayers())):
+					self.server.sckt.sendLoseRanking(self.player, self.player.ranking)
+				else:
+					self.server.sckt.sendPlaceRanking(self.player, self.player.ranking)
+
 				print("{0} is rank {1}!".format(self.player.player_name, self.player.ranking))
 				self.player.setStateToFinished()
 				break
@@ -42,7 +51,7 @@ class PlayerSocketThread (threading.Thread):
 class Server(object):
 	def __init__(self):
 		#================================== INITIALIZE SERVER ==================================#
-		self.ip = '127.0.0.34'
+		self.ip = '127.0.0.1'
 		self.port = 5005
 		self.buffer_size = 1024
 		self.players = []
@@ -80,6 +89,7 @@ class Server(object):
 				tempCards.append(selected_cards.pop())
 			player.cards = tempCards
 			cards_to_send = ' '.join(tempCards)
+			print("{0}'s cards are: {1}".format(player.player_name, cards_to_send))
 			self.sckt.sendCards(player, cards_to_send)
 
 	def start(self):
@@ -148,6 +158,7 @@ class Server(object):
 			#swap cards
 			for player in self.players:
 				player.setStateToChoosingCard()
+				print("{0}'s cards are: {1}".format(player.player_name, player.cards))
 				self.sckt.sendCards(player, ' '.join(player.cards))
 
 		tempList = sorted(self.players, key=operator.attrgetter('ranking'))

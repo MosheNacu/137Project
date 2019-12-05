@@ -51,7 +51,9 @@ class NetworkCommand(object):
 	CLIENT_CHOOSE_CARD = '08'
 	SERVER_WINNER_DECLARED = '09'
 	CLIENT_PUT_DOWN = '10'
-	SERVER_RANKINGS = '11'
+	SERVER_RANKINGS_WIN = '11'
+	SERVER_RANKINGS_PLACE = '12'
+	SERVER_RANKINGS_LOSE = '13'
 
 #================================== CLIENT SOCKET HANDLER ==================================#
 class ClientNetworkHandler(object):
@@ -79,6 +81,7 @@ class ClientNetworkHandler(object):
 
 	def leaveLobby(self):
 		self.sendCommand(NetworkCommand.CLIENT_LEAVE)
+		self.sckt.close()
 
 	def chooseCard(self, chosen_card):
 		choose_message = "{0}{1}".format(NetworkCommand.CLIENT_CHOOSE_CARD, chosen_card)
@@ -127,3 +130,16 @@ class ServerNetworkHandler(object):
 
 	def sendWinCondition(self, player):
 		self.sendCommand(player, NetworkCommand.SERVER_WINNER_DECLARED)
+
+	def sendWinRanking(self, player):
+		message = "{0}:1".format(NetworkCommand.SERVER_RANKINGS_WIN)
+		byte_message = message.encode('utf8')
+		player.conn.send(byte_message)
+	def sendLoseRanking(self, player, ranking):
+		message = "{0}:{1}".format(NetworkCommand.SERVER_RANKINGS_LOSE, ranking)
+		byte_message = message.encode('utf8')
+		player.conn.send(byte_message)
+	def sendPlaceRanking(self, player, ranking):
+		message = "{0}:{1}".format(NetworkCommand.SERVER_RANKINGS_PLACE,ranking)
+		byte_message = message.encode('utf8')
+		player.conn.send(byte_message)
