@@ -64,6 +64,7 @@ class CompleteGamePanel(threading.Thread):
 		instructionButton = self.canvas.create_image(220, 380, image=self.instructionButtonImage, anchor=tk.NW)
 		self.canvas.tag_bind(instructionButton, '<ButtonPress-1>', (lambda event: self.startInstructions()))
 		exitButton = self.canvas.create_image(430, 380, image=self.exitGameButtonImage, anchor=tk.NW)
+		self.canvas.tag_bind(exitButton, '<ButtonPress-1>', (lambda event: self.window.destroy()))
 	def startJoinOptions(self):
 		self.clearCanvas()
 		currentBackground = self.canvas.create_image(0, 0, image=self.joinSettingsBackground, anchor=tk.NW)
