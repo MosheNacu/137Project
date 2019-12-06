@@ -51,7 +51,7 @@ class PlayerSocketThread (threading.Thread):
 class Server(object):
 	def __init__(self):
 		#================================== INITIALIZE SERVER ==================================#
-		self.ip = '127.0.0.1'
+		self.ip = '127.0.0.2'
 		self.port = 5005
 		self.buffer_size = 1024
 		self.players = []

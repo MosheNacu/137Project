@@ -185,13 +185,16 @@ class CompleteGamePanel(threading.Thread):
 			if message[:2] == NetworkCommand.SERVER_RANKINGS_WIN:
 				self.clearCanvas()
 				currentBackground = self.canvas.create_image(0, 0, image=self.winBackground, anchor=tk.NW)
+				self.canvas.create_text(140, 400,fill = "yellow",font="Times 20",text="Your rank is {0}".format(message[3:]))
 				break
 			elif message[:2] == NetworkCommand.SERVER_RANKINGS_LOSE:
 				self.clearCanvas()
 				currentBackground = self.canvas.create_image(0, 0, image=self.loseBackground, anchor=tk.NW)
+				self.canvas.create_text(140, 400,fill = "yellow",font="Times 20",text="Your rank is {0}".format(message[3:]))
 				break
 			elif message[:2] == NetworkCommand.SERVER_RANKINGS_PLACE:
 				self.clearCanvas()
 				currentBackground = self.canvas.create_image(0, 0, image=self.notloseBackground, anchor=tk.NW)
+				self.canvas.create_text(140, 400,fill = "yellow",font="Times 20",text="Your rank is {0}".format(message[3:]))
 				break
 x = CompleteGamePanel()
