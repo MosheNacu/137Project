@@ -51,7 +51,7 @@ class PlayerSocketThread (threading.Thread):
 class Server(object):
 	def __init__(self):
 		#================================== INITIALIZE SERVER ==================================#
-		self.ip = '127.0.0.2'
+		self.ip = '10.0.5.22'
 		self.port = 5005
 		self.buffer_size = 1024
 		self.players = []
@@ -163,6 +163,7 @@ class Server(object):
 
 		tempList = sorted(self.players, key=operator.attrgetter('ranking'))
 		for x in tempList:
+			x.conn.close()
 			print("{0} - {1}".format(x.ranking, x.player_name))
 		#================================== JOIN THREADS ==================================#
 		for t in self.threads:
